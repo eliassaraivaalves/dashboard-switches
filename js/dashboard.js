@@ -40,11 +40,7 @@ function renderPage() {
 
 function formatLatency(value) {
     if (!value || value <= 0) return 0;
-
-    // Zabbix manda em segundos
-    let ms = value * 1000;
-
-    return Math.round(ms); // remove casas decimais
+    return Math.round(value * 1000);
 }
 
 async function updateDashboard() {
@@ -62,6 +58,7 @@ async function updateDashboard() {
     for (let host of hosts) {
 
         const isUp = host.status === "0";
+
         if (isUp) online++;
         else offline++;
 
@@ -82,7 +79,6 @@ async function updateDashboard() {
         if (latency > 150) latClass = "lat-high";
 
         let statusClass = isUp ? "status-up" : "status-down";
-        let barWidth = Math.min(latency / 2, 100);
 
         allRows.push(`
         <tr>
@@ -92,7 +88,7 @@ async function updateDashboard() {
             </span></td>
             <td>-</td>
             <td>
-                <div class="latency-bar ${latClass}" style="width:${barWidth}%">
+                <div class="latency-box ${latClass}">
                     ${latency} ms
                 </div>
             </td>
