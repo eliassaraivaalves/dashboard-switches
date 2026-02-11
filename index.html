@@ -2,41 +2,56 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard NOC - Switches</title>
+<title>NOC - Switches</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="css/style.css">
-
-<!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
+
 <body>
 
-<h1>Dashboard de Switches</h1>
-
-<div id="loader">Carregando dados...</div>
+<div class="topbar">
+    <div class="logo">
+        <div class="logo-box">BS</div>
+        <div class="logo-text">BEE SOLUTIONS</div>
+    </div>
+    <div class="title">Consolidado de Switches (Geral)</div>
+</div>
 
 <div class="cards">
-  <div class="card total" id="total">Switches Total: 0</div>
-  <div class="card online" id="online">Switches Online: 0</div>
-  <div class="card offline" id="offline">Switches Offline: 0</div>
+    <div class="card blue">
+        <div class="card-title">Switches Total</div>
+        <div class="card-value" id="total">0</div>
+    </div>
+
+    <div class="card green">
+        <div class="card-title">Switches Online</div>
+        <div class="card-value" id="online">0</div>
+    </div>
+
+    <div class="card red">
+        <div class="card-title">Switches Offline</div>
+        <div class="card-value" id="offline">0</div>
+    </div>
 </div>
 
-<div class="chart-container">
-  <canvas id="latencyChart"></canvas>
-</div>
+<div class="table-section">
+    <div class="table-title">Tabela Análise de Switches (Geral)</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Host</th>
-      <th>Status</th>
-      <th>Perdas (%)</th>
-      <th>Latência (ms)</th>
-    </tr>
-  </thead>
-  <tbody id="switch-table"></tbody>
-</table>
+    <table>
+        <thead>
+            <tr>
+                <th>Host</th>
+                <th>Ping</th>
+                <th>Perdas (%)</th>
+                <th>Latência (ms)</th>
+            </tr>
+        </thead>
+        <tbody id="switch-table">
+        </tbody>
+    </table>
+</div>
 
 <script src="js/dashboard.js"></script>
 
