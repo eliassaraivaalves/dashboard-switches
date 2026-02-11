@@ -9,8 +9,6 @@ body {
 h1 {
   text-align: center;
   margin-bottom: 20px;
-  font-size: 2em;
-  color: #f1f1f1;
 }
 
 #loader {
@@ -23,26 +21,25 @@ h1 {
 }
 
 @keyframes blink {
-  0%, 50%, 100% { opacity: 1; }
-  25%, 75% { opacity: 0.2; }
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
 .cards {
   display: flex;
-  flex-wrap: wrap;
   gap: 20px;
-  justify-content: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
 }
 
 .card {
-  flex: 1 1 200px;
+  flex: 1;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
   font-size: 1.2em;
   font-weight: bold;
-  transition: background 0.5s;
+  transition: 0.4s;
 }
 
 .total { background: #007bff; }
@@ -59,23 +56,31 @@ h1 {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 40px;
 }
 
 th, td {
   padding: 12px;
-  text-align: left;
 }
 
-th { background: #333; font-weight: bold; }
+th { background: #333; }
+
 tr:nth-child(even) { background: #2a2a2a; }
-tr:hover { background: #444; }
 
-.latency-low { background: #28a745; color: #fff; padding: 5px 10px; border-radius: 5px; display: inline-block; }
-.latency-medium { background: #ffc107; color: #000; padding: 5px 10px; border-radius: 5px; display: inline-block; }
-.latency-high { background: #dc3545; color: #fff; padding: 5px 10px; border-radius: 5px; display: inline-block; }
+.latency-low {
+  background: #28a745;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
 
-@media (max-width: 768px) {
-  .cards { flex-direction: column; align-items: center; }
-  .card { width: 100%; }
+.latency-medium {
+  background: #ffc107;
+  color: #000;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+.latency-high {
+  background: #dc3545;
+  padding: 5px 10px;
+  border-radius: 6px;
 }
