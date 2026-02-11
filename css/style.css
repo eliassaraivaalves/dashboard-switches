@@ -1,11 +1,13 @@
+/* ===== RESET ===== */
+
 body {
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
     background: #0b1118;
-    color: #fff;
+    color: #ffffff;
 }
 
-/* TOPBAR */
+/* ===== TOPBAR ===== */
 
 .topbar {
     display: flex;
@@ -22,29 +24,24 @@ body {
     gap: 15px;
 }
 
-.logo-box {
-    width: 45px;
-    height: 45px;
-    background: #1e293b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 20px;
-    border-radius: 6px;
+.logo-img {
+    height: 50px;
 }
 
 .logo-text {
     font-size: 14px;
     color: #60a5fa;
+    font-weight: bold;
+    line-height: 1.2;
 }
 
 .title {
     font-size: 16px;
     color: #94a3b8;
+    font-weight: 500;
 }
 
-/* CARDS */
+/* ===== CARDS ===== */
 
 .cards {
     display: flex;
@@ -55,19 +52,27 @@ body {
 .card {
     flex: 1;
     padding: 25px;
-    border-radius: 6px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.03);
 }
 
 .card-title {
     font-size: 14px;
     margin-bottom: 10px;
+    opacity: 0.9;
 }
 
 .card-value {
     font-size: 42px;
     font-weight: bold;
 }
+
+/* Gradientes */
 
 .blue {
     background: linear-gradient(90deg, #1d4ed8, #2563eb);
@@ -81,13 +86,14 @@ body {
     background: linear-gradient(90deg, #7f1d1d, #ef4444);
 }
 
-/* TABLE */
+/* ===== TABLE SECTION ===== */
 
 .table-section {
     margin: 20px 30px;
     background: #0f1720;
     padding: 20px;
-    border-radius: 6px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 
 .table-title {
@@ -96,6 +102,8 @@ body {
     color: #94a3b8;
 }
 
+/* ===== TABLE ===== */
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -103,19 +111,24 @@ table {
 
 th {
     text-align: left;
-    padding: 10px;
+    padding: 12px;
     font-size: 13px;
     color: #94a3b8;
     border-bottom: 1px solid #1f2937;
+    text-transform: uppercase;
 }
 
 td {
-    padding: 10px;
+    padding: 12px;
     border-bottom: 1px solid #1f2937;
     font-size: 14px;
 }
 
-/* STATUS */
+tr:hover {
+    background: #1f2937;
+}
+
+/* ===== STATUS ===== */
 
 .status-up {
     background: #14532d;
@@ -135,15 +148,19 @@ td {
     display: inline-block;
 }
 
-/* LATENCY BARS */
+/* ===== LATENCY BAR ===== */
 
 .latency-bar {
-    height: 20px;
+    height: 22px;
     border-radius: 4px;
     text-align: center;
     font-size: 12px;
     font-weight: bold;
+    line-height: 22px;
+    color: #fff;
 }
+
+/* Latência níveis */
 
 .lat-low {
     background: #166534;
@@ -155,4 +172,12 @@ td {
 
 .lat-high {
     background: #dc2626;
+}
+
+/* ===== RESPONSIVO TV ===== */
+
+@media (max-width: 1200px) {
+    .cards {
+        flex-direction: column;
+    }
 }
