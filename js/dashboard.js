@@ -1,6 +1,11 @@
 const ZABBIX_URL = "backend/api.php";
 const ZABBIX_TOKEN = "YOUR_TOKEN_HERE";
-const REFRESH_INTERVAL = 15000; // 15 segundos
+const REFRESH_INTERVAL = 20000;
+const ROWS_PER_PAGE = 15;
+const PAGE_ROTATION_TIME = 10000;
+
+let allRows = [];
+let currentPage = 0;
 
 async function fetchZabbix(method, params) {
     const response = await fetch(ZABBIX_URL, {
@@ -16,96 +21,95 @@ async function fetchZabbix(method, params) {
     });
 
     const data = await response.json();
+    return data.result || [];
+}
 
-    if (data.error) {
-        console.error("Erro Zabbix:", data.error);
-        return [];
+function renderPage() {
+    const start = currentPage * ROWS_PER_PAGE;
+    const end = start + ROWS_PER_PAGE;
+
+    document.getElementById("switch-table").innerHTML =
+        allRows.slice(start, end).join("");
+
+    currentPage++;
+
+    if (start + ROWS_PER_PAGE >= allRows.length) {
+        currentPage = 0;
     }
+}
 
-    return data.result;
+function formatLatency(value) {
+    if (!value || value <= 0) return 0;
+
+    // Zabbix manda em segundos
+    let ms = value * 1000;
+
+    return Math.round(ms); // remove casas decimais
 }
 
 async function updateDashboard() {
 
-    try {
+    const hosts = await fetchZabbix("host.get", {
+        output: ["hostid", "name", "status"]
+    });
 
-        // Busca todos os hosts
-        const hosts = await fetchZabbix("host.get", {
-            output: ["hostid", "name", "status"],
-            selectInterfaces: ["ip"]
+    let total = hosts.length;
+    let online = 0;
+    let offline = 0;
+
+    allRows = [];
+
+    for (let host of hosts) {
+
+        const isUp = host.status === "0";
+        if (isUp) online++;
+        else offline++;
+
+        const latencyItems = await fetchZabbix("item.get", {
+            output: ["lastvalue"],
+            hostids: host.hostid,
+            search: { key_: "icmppingsec" }
         });
 
-        let total = hosts.length;
-        let online = 0;
-        let offline = 0;
-        let tableHTML = "";
+        let latency = 0;
+        if (latencyItems.length > 0)
+            latency = parseFloat(latencyItems[0].lastvalue);
 
-        for (let host of hosts) {
+        latency = formatLatency(latency);
 
-            const isUp = host.status === "0";
-            const status = isUp ? "Up" : "Down";
+        let latClass = "lat-low";
+        if (latency > 50 && latency <= 150) latClass = "lat-medium";
+        if (latency > 150) latClass = "lat-high";
 
-            if (isUp) online++;
-            else offline++;
+        let statusClass = isUp ? "status-up" : "status-down";
+        let barWidth = Math.min(latency / 2, 100);
 
-            // Busca latência (icmppingsec)
-            const latencyItems = await fetchZabbix("item.get", {
-                output: ["lastvalue"],
-                hostids: host.hostid,
-                search: { key_: "icmppingsec" }
-            });
-
-            // Busca perda (icmppingloss)
-            const lossItems = await fetchZabbix("item.get", {
-                output: ["lastvalue"],
-                hostids: host.hostid,
-                search: { key_: "icmppingloss" }
-            });
-
-            let latency = 0;
-            let loss = 0;
-
-            if (latencyItems.length > 0)
-                latency = parseFloat(latencyItems[0].lastvalue) || 0;
-
-            if (lossItems.length > 0)
-                loss = parseFloat(lossItems[0].lastvalue) || 0;
-
-            let statusClass = isUp ? "status-up" : "status-down";
-
-            let latClass = "lat-low";
-            if (latency > 20 && latency <= 50) latClass = "lat-medium";
-            if (latency > 50) latClass = "lat-high";
-
-            let barWidth = Math.min(latency * 3, 100);
-
-            tableHTML += `
-            <tr>
-                <td>${host.name}</td>
-                <td><span class="${statusClass}">${status}</span></td>
-                <td>${loss}%</td>
-                <td>
-                    <div class="latency-bar ${latClass}" style="width:${barWidth}%">
-                        ${latency} ms
-                    </div>
-                </td>
-            </tr>
-            `;
-        }
-
-        document.getElementById("total").innerText = total;
-        document.getElementById("online").innerText = online;
-        document.getElementById("offline").innerText = offline;
-
-        document.getElementById("switch-table").innerHTML = tableHTML;
-
-    } catch (error) {
-        console.error("Erro geral:", error);
+        allRows.push(`
+        <tr>
+            <td>${host.name}</td>
+            <td><span class="${statusClass}">
+                ${isUp ? "Online" : "Offline"}
+            </span></td>
+            <td>-</td>
+            <td>
+                <div class="latency-bar ${latClass}" style="width:${barWidth}%">
+                    ${latency} ms
+                </div>
+            </td>
+        </tr>
+        `);
     }
+
+    document.getElementById("total").innerText = total;
+    document.getElementById("online").innerText = online;
+    document.getElementById("offline").innerText = offline;
+
+    currentPage = 0;
+    renderPage();
 }
 
-// Inicialização
 window.onload = () => {
     updateDashboard();
     setInterval(updateDashboard, REFRESH_INTERVAL);
+    setInterval(renderPage, PAGE_ROTATION_TIME);
 };
