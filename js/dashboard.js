@@ -70,7 +70,7 @@ async function updateDashboard() {
         });
 
         let latency = 0;
-        if (latencyItems.length > 0)
+        if (latencyItems.length > 0 && latencyItems[0].lastvalue !== null)
             latency = parseFloat(latencyItems[0].lastvalue);
 
         latency = formatLatency(latency);
@@ -83,11 +83,11 @@ async function updateDashboard() {
         });
 
         let loss = 0;
-        if (lossItems.length > 0)
+        if (lossItems.length > 0 && lossItems[0].lastvalue !== null)
             loss = parseFloat(lossItems[0].lastvalue);
 
-        // Se offline, força 100%
-        if (!isUp) loss = 100;
+        // Se offline ou sem valor, força 100%
+        if (!isUp || !loss) loss = 100;
 
         let latClass = "lat-low";
         if (latency > 50 && latency <= 150) latClass = "lat-medium";
@@ -101,7 +101,7 @@ async function updateDashboard() {
             <td><span class="${statusClass}">
                 ${isUp ? "Online" : "Offline"}
             </span></td>
-            <td>${loss}%</td> <!-- Coluna de perdas atualizada -->
+            <td>${loss}%</td> <!-- coluna de perdas agora funcionando -->
             <td>
                 <div class="latency-box ${latClass}">
                     ${latency} ms
