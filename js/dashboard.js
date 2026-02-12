@@ -66,7 +66,7 @@ async function updateDashboard() {
         const latencyItems = await fetchZabbix("item.get", {
             output: ["lastvalue"],
             hostids: host.hostid,
-            search: { key_: "icmppingsec" }
+            filter: { key_: "icmppingsec" } // usando filter para latência
         });
 
         let latency = 0;
@@ -75,16 +75,17 @@ async function updateDashboard() {
 
         latency = formatLatency(latency);
 
-        // Buscar perda de pacotes
+        // Buscar perda de pacotes (icmppingloss)
         const lossItems = await fetchZabbix("item.get", {
             output: ["lastvalue"],
             hostids: host.hostid,
-            search: { key_: "icmppingloss" }
+            filter: { key_: "icmppingloss" } // usando filter para garantir que funcione com template SNMP
         });
 
         let loss = 0;
-        if (lossItems.length > 0 && lossItems[0].lastvalue !== null)
+        if (lossItems.length > 0 && lossItems[0].lastvalue !== null) {
             loss = parseFloat(lossItems[0].lastvalue);
+        }
 
         // Se offline ou sem valor, força 100%
         if (!isUp || !loss) loss = 100;
@@ -101,7 +102,7 @@ async function updateDashboard() {
             <td><span class="${statusClass}">
                 ${isUp ? "Online" : "Offline"}
             </span></td>
-            <td>${loss}%</td> <!-- coluna de perdas agora funcionando -->
+            <td>${loss}%</td> <!-- coluna de perdas preenchida -->
             <td>
                 <div class="latency-box ${latClass}">
                     ${latency} ms
