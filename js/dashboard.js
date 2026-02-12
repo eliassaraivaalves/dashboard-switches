@@ -1,12 +1,13 @@
 const ZABBIX_URL = "backend/api.php";
 const ZABBIX_TOKEN = "YOUR_TOKEN_HERE";
-const REFRESH_INTERVAL = 30000;
-const ROWS_PER_PAGE = 10;
-const PAGE_ROTATION_TIME = 20000;
+const REFRESH_INTERVAL = 30000;  // Atualização do dashboard a cada 30s
+const ROWS_PER_PAGE = 10;         // Quantidade de linhas por página
+const PAGE_ROTATION_TIME = 20000; // Tempo de rotação da página
 
 let allRows = [];
 let currentPage = 0;
 
+// Função genérica para chamadas à API do Zabbix
 async function fetchZabbix(method, params) {
     const response = await fetch(ZABBIX_URL, {
         method: "POST",
@@ -24,6 +25,7 @@ async function fetchZabbix(method, params) {
     return data.result || [];
 }
 
+// Função para renderizar uma página da tabela
 function renderPage() {
     const start = currentPage * ROWS_PER_PAGE;
     const end = start + ROWS_PER_PAGE;
@@ -38,11 +40,13 @@ function renderPage() {
     }
 }
 
+// Formata a latência para ms
 function formatLatency(value) {
     if (!value || value <= 0) return 0;
     return Math.round(value * 1000);
 }
 
+// Função principal para atualizar o dashboard
 async function updateDashboard() {
 
     const hosts = await fetchZabbix("host.get", {
@@ -62,11 +66,11 @@ async function updateDashboard() {
         if (isUp) online++;
         else offline++;
 
-        // Buscar latência
+        // Buscar latência (icmppingsec)
         const latencyItems = await fetchZabbix("item.get", {
             output: ["lastvalue"],
             hostids: host.hostid,
-            filter: { key_: "icmppingsec" } // usando filter para latência
+            filter: { key_: "icmppingsec" }
         });
 
         let latency = 0;
@@ -79,30 +83,28 @@ async function updateDashboard() {
         const lossItems = await fetchZabbix("item.get", {
             output: ["lastvalue"],
             hostids: host.hostid,
-            filter: { key_: "icmppingloss" } // usando filter para garantir que funcione com template SNMP
+            filter: { key_: "icmppingloss" }
         });
 
         let loss = 0;
-        if (lossItems.length > 0 && lossItems[0].lastvalue !== null) {
+        if (lossItems.length > 0 && lossItems[0].lastvalue !== null)
             loss = parseFloat(lossItems[0].lastvalue);
-        }
 
-        // Se offline ou sem valor, força 100%
-        if (!isUp || !loss) loss = 100;
-
+        // Classes para estilo visual
         let latClass = "lat-low";
         if (latency > 50 && latency <= 150) latClass = "lat-medium";
         if (latency > 150) latClass = "lat-high";
 
         let statusClass = isUp ? "status-up" : "status-down";
 
+        // Adiciona a linha à tabela
         allRows.push(`
         <tr>
             <td>${host.name}</td>
             <td><span class="${statusClass}">
                 ${isUp ? "Online" : "Offline"}
             </span></td>
-            <td>${loss}%</td> <!-- coluna de perdas preenchida -->
+            <td>${loss}%</td> <!-- coluna de perdas usando valor real do Zabbix -->
             <td>
                 <div class="latency-box ${latClass}">
                     ${latency} ms
@@ -112,6 +114,7 @@ async function updateDashboard() {
         `);
     }
 
+    // Atualiza os contadores do dashboard
     document.getElementById("total").innerText = total;
     document.getElementById("online").innerText = online;
     document.getElementById("offline").innerText = offline;
@@ -120,6 +123,7 @@ async function updateDashboard() {
     renderPage();
 }
 
+// Inicialização ao carregar a página
 window.onload = () => {
     updateDashboard();
     setInterval(updateDashboard, REFRESH_INTERVAL);
