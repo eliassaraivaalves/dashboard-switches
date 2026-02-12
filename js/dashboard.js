@@ -1,7 +1,7 @@
 const ZABBIX_URL = "backend/api.php";
 const ZABBIX_TOKEN = "YOUR_TOKEN_HERE";
 const REFRESH_INTERVAL = 20000;
-const ROWS_PER_PAGE = 15;
+const ROWS_PER_PAGE = 10;
 const PAGE_ROTATION_TIME = 10000;
 
 let allRows = [];
