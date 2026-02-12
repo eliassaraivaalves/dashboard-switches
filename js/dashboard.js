@@ -1,7 +1,7 @@
 const ZABBIX_URL = "backend/api.php";
 const ZABBIX_TOKEN = "YOUR_TOKEN_HERE";
 const REFRESH_INTERVAL = 30000;  // Atualização do dashboard a cada 30s
-const ROWS_PER_PAGE = 10;         // Quantidade de linhas por página
+const ROWS_PER_PAGE = 12;         // Quantidade de linhas por página
 const PAGE_ROTATION_TIME = 20000; // Tempo de rotação da página
 
 let allRows = [];
